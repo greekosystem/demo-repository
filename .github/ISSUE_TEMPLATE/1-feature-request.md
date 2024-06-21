@@ -1,3 +1,4 @@
+---
 name: feature-request-template
 about: Request new features
 assignees: mkpro118
@@ -35,3 +36,4 @@ body:
       options:
         - label: I have confirmed there are no similar existing issues.
           required: true
+---
