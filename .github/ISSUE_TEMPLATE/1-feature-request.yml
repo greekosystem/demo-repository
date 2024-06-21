@@ -1,4 +1,5 @@
 name: feature-request-template
+description: "Request a new feature"
 assignees: mkpro118
 labels: enhancement
 title: "New Feature: "
