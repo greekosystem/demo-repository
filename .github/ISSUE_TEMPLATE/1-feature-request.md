@@ -14,7 +14,6 @@ body:
       description: |
         Please present a concise description of the problem to be addressed by this feature request.
         Please be clear what parts of the problem are considered to be in-scope and out-of-scope.
-  
   - type: textarea
     id: suggestions
     validations:
@@ -28,7 +27,6 @@ body:
         - Caveats and considerations for the future
         If there are multiple solutions, please present each one separately. 
         Save comparisons for the very end.
-  
   - type: checkboxes
     id: seen-existing-issues
     attributes:
