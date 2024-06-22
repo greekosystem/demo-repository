@@ -1,12 +1,12 @@
-*Unless your change is trivial, please create an issue to discuss the change before creating a PR*
+<!-- Unless your change is trivial, please create an issue to discuss the change before creating a PR -->
 
 ## Change Summary
 
-Please give a short summary of the changes.
+<!-- Please give a short summary of the changes. -->
 
 ## Related issue number
 
-*Please use "fix #123" style references so the issue is closed when this PR is merged.*
+<!-- Please use "fix #123" style references so the issue is closed when this PR is merged. -->
 
 ## Checklist
 
