@@ -11,15 +11,9 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - name: 'Auto-assign reviewer'
-        uses: wow-actions/auto-assign@v3.0.2
+      - uses: twoeqaul0/auto-assign-bot@v1.2.1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          numberOfReviewers: 1
-          reviewers: |
-            gpalacios2001
-          skipKeywords: wip, draft
-          skipDraft: true
+          configuration-path: '.github/auto-assign.yml'
       - name: 'Auto-assign issue'
         uses: pozil/auto-assign-issue@v1
         with:
