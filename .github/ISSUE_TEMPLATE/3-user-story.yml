@@ -36,7 +36,7 @@ body:
       placeholder: As a user, I am able to sucessfully ...
         
   - type: checkboxes
-    id: seen-existing-user stories
+    id: seen-existing-user-stories
     attributes:
       label: Please confirm you have checked for similar existing user stories
       options:
