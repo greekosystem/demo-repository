@@ -63,7 +63,7 @@ jobs:
             --skip-lines $USER_STORY_SKIP_LINES \
             update \
             --issue-number ${{ github.event.issue.number }} \
-            --status USER_STORY_COMPLETE_STATUS \
+            --status $USER_STORY_COMPLETE_STATUS \
 
       - name: Add User Story to Document (manual dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
