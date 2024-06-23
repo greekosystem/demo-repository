@@ -3,6 +3,34 @@ name: Add New User Story
 on:
   issues:
     types: [opened]
+  workflow_dispatch:
+    inputs:
+      content:
+        description: Description of the User Story
+        required: true
+        type: string
+      log-level:
+        description: Log Level
+        required: true
+        type: choice
+        options:
+          - debug
+          - info
+          - warning
+          - error
+          - critical
+      issue-number:
+        description: Related Issue Number
+        required: true
+        type: string
+      issue-url:
+        description: URL of the related issue
+        required: true
+        type: string
+      status:
+        description: Status of the user story
+        required: true
+        type: string
 
 permissions: write-all
 
@@ -33,10 +61,21 @@ jobs:
         if: ${{ github.event_name == 'issues' }}
         run: |
           python .github/scripts/user_story.py create \
+            --log-level error \
             --issue-number ${{ github.event.issue.number }} \
             --url ${{ github.event.issue.html_url }} \
             --status "In-Progress" \
             --content "${{ github.event.issue.body }}"
+
+      - name: Add User Story to Document (manual dispatch)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          python .github/scripts/user_story.py create \
+            --log-level ${{ inputs.log-level }} \
+            --issue-number ${{ inputs.issue_number }} \
+            --url ${{ inputs.issue-url }} \
+            --status ${{ inputs.status }} \
+            --content "${{ inputs.content }}"
 
       - name: Commit files
         run: |
