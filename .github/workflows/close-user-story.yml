@@ -71,7 +71,7 @@ jobs:
         run: |
           git config --local user.name ${MK_USERNAME}
           git config --local user.email ${MK_EMAIL}
-          git add docs/user-story/README.md
+          git add docs
           if ! git diff-index --quiet HEAD; then
             echo "Changes detected. Committing..."
             git commit -m "Updated User Stories [auto-built]"
