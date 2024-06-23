@@ -60,8 +60,7 @@ jobs:
       - name: Add User Story to Document
         if: ${{ github.event_name == 'issues' }}
         run: |
-          python .github/scripts/user_story.py create \
-            --log-level error \
+          python .github/scripts/user_story.py create --log-level debug \
             --issue-number ${{ github.event.issue.number }} \
             --url ${{ github.event.issue.html_url }} \
             --status "In-Progress" \
@@ -70,8 +69,7 @@ jobs:
       - name: Add User Story to Document (manual dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
-          python .github/scripts/user_story.py create \
-            --log-level ${{ inputs.log-level }} \
+          python .github/scripts/user_story.py create --log-level ${{ inputs.log-level }} \
             --issue-number ${{ inputs.issue_number }} \
             --url ${{ inputs.issue-url }} \
             --status ${{ inputs.status }} \

@@ -212,10 +212,7 @@ def main():
     if args.command == 'create':
         content = args.content
 
-        config = Config(
-            start_marker=r'##',
-            end_marker=r'!!',
-        )
+        config = Config()
         description = extract_content(config=config, text=content)
 
         assert description is not None, 'Description is not available'
