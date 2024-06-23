@@ -8,4 +8,4 @@
 | fix lgo lvel. | 23 Jun, 2024 | [#18](https://github.com/greekosystem/demo-repository/issues/18) | Completed |
 | Not upgrade. | 23 Jun, 2024 | [#21](https://github.com/greekosystem/demo-repository/issues/21) | In-Progress |
 | Full Test Run. | 23 Jun, 2024 | [#22](https://github.com/greekosystem/demo-repository/issues/22) | Completed |
-| Be Fancy. | 23 Jun, 2024 | [#23](https://github.com/greekosystem/demo-repository/issues/23) | In-Progress |
+| Be Fancy. | 23 Jun, 2024 | [#23](https://github.com/greekosystem/demo-repository/issues/23) | USER_STORY_COMPLETE_STATUS |
