@@ -60,7 +60,6 @@ jobs:
       - name: Setup User Story
         run: pip install git+https://github.com/mkpro118/auto-build-user-stories.git@v1.1.0
 
-
       - name: Add User Story to Document
         if: ${{ github.event_name == 'issues' }}
         run: |
@@ -84,7 +83,7 @@ jobs:
         run: |
           git config --local user.name ${MK_USERNAME}
           git config --local user.email ${MK_EMAIL}
-          git add -A
+          git add docs/user-story/README.md
           if ! git diff-index --quiet HEAD; then
             echo "Changes detected. Committing..."
             git commit -m "Updated User Stories [auto-built]"
