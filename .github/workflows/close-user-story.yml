@@ -1,4 +1,4 @@
-name: Add New User Story
+name: Close User Story
 
 on:
   issues:
@@ -29,10 +29,13 @@ permissions: write-all
 env:
   MK_USERNAME: ${{ secrets.MK_USERNAME }}
   MK_EMAIL: ${{ secrets.MK_EMAIL }}
-  PYTHONPATH: ${{ github.workspace }}/.github/scripts/
+  USER_STORY_FILE: ${{ github.workspace }}/docs/user-stories/README.md
+  USER_STORY_LOG_LEVEL: error
+  USER_STORY_SKIP_LINES: 2
+  USER_STORY_COMPLETE_STATUS: Completed
 
 jobs:
-  add-user-story:
+  close-user-story:
     runs-on: ubuntu-latest
     if: contains(github.event.issue.labels.*.name, 'user-story')
     steps:
@@ -55,14 +58,19 @@ jobs:
       - name: Add User Story to Document
         if: ${{ github.event_name == 'issues' }}
         run: |
-          user_story --log-level debug update \
+          user_story --log-level $USER_STORY_LOG_LEVEL \
+            --file $USER_STORY_FILE \
+            --skip-lines $USER_STORY_SKIP_LINES \
+            update \
             --issue-number ${{ github.event.issue.number }} \
-            --status "Completed" \
+            --status USER_STORY_COMPLETE_STATUS \
 
       - name: Add User Story to Document (manual dispatch)
         if: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           user_story --log-level ${{ inputs.log-level }} \
+            --file ${{ inputs.file }} \
+            --skip-lines ${{ inputs.skip-lines }} \
             update \
             --issue-number ${{ inputs.issue_number }} \
             --status ${{ inputs.status }} \
