@@ -1,17 +1,25 @@
 import argparse
 import datetime
+import logging
 import pathlib
-import re
 import platform
+import re
+import sys
 
+from typing import Callable
+
+log = logging.getLogger(__name__)
+logging.basicConfig()
 
 try:
     from extract_content import extract_content, Config
     from parse_md_table import MarkDownTable, Row
 except ImportError:
-    print('err')
-    import sys
-    sys.path.insert(0, str(pathlib.Path(__file__).parent))
+    parent = str(pathlib.Path(__file__).parent)
+
+    log.debug(f'Direct Imports failed! Adding parent "{parent}" to sys.path')
+
+    sys.path.insert(0, parent)
     from extract_content import extract_content, Config
     from parse_md_table import MarkDownTable, Row
 
@@ -75,16 +83,25 @@ def parse_arguments() -> argparse.Namespace:
 
     # Skip lines (2 by default)
     parser.add_argument(
-        '--skip-lines', '-l',
+        '--skip-lines', '--skip',
         type=int,
         default=2,
         help='Number of lines to skip before parsing the user story table'
+    )
+
+    parser.add_argument(
+        '--log-level', '-l',
+        type=str.lower,
+        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        default='error',
+        help='Set the logging level'
     )
 
     return parser.parse_args()
 
 
 def read_file(filepath: str | pathlib.Path) -> str:
+    log.debug(f'Reading file: {filepath}')
     with open(filepath) as f:
         content = f.read()
 
@@ -92,8 +109,27 @@ def read_file(filepath: str | pathlib.Path) -> str:
 
 
 def write_file(filepath: str | pathlib.Path, content: str) -> None:
+    log.debug(f'Writing {len(content)} bytes to file: {filepath}')
+
     with open(filepath, 'w+') as f:
         f.write(content)
+
+
+def make_predicate(issue_number: int) -> Callable[[Row], bool]:
+    log.debug(f'Making predicate for {issue_number = }')
+    pattern = re.compile(r'\[#(\d+)\]')
+
+    def predicate(row: Row) -> bool:
+        match = pattern.match(row['Tracked by Issue'])
+
+        if match is None:
+            return False
+
+        # Regex would have only selected digits
+        # Should be a guaranteed cast
+        return int(match.group(1)) == issue_number
+
+    return predicate
 
 
 def add_user_story(table: MarkDownTable,
@@ -101,9 +137,25 @@ def add_user_story(table: MarkDownTable,
                    issue_number: int,
                    html_url: str,
                    status: str) -> MarkDownTable:
+    predicate = make_predicate(issue_number)
+
+    idx, row = table.find(predicate)
+
+    if row is not None:
+        new_table = MarkDownTable(headers=table.headers)
+        new_table.append(row)
+
+        text = new_table.to_text()
+
+        log.error(f'Issue number {issue_number} already exists.\n{text}')
+        sys.exit(1)
+
     # Collapse description into one line if it isn't already
     # Multiline text will break markdown tables
-    description = ' '.join(description.splitlines())
+    description = ' '.join(
+        desc if desc.endswith('.') else f'{desc}.'
+        for desc in description.splitlines()
+    )
     headers = table.headers
 
     fmt_str: str
@@ -132,25 +184,12 @@ def add_user_story(table: MarkDownTable,
 def update_user_story(table: MarkDownTable,
                       issue_number: int,
                       status: str) -> MarkDownTable:
-    pattern = re.compile(r'\[#(\d+)\]')
-
-    def predicate(row: Row) -> bool:
-        match = pattern.match(row['Tracked by Issue'])
-        print(match, row)
-
-        if match is None:
-            return False
-
-        print(match.group(1).strip())
-
-        num = int(match.group(1).strip())
-        print(type(num), type(issue_number))
-        return num == issue_number
-
+    predicate = make_predicate(issue_number)
     idx, row = table.find(predicate)
 
     if row is None:
-        raise ValueError(f'No entry with issue number {issue_number} found')
+        log.error(f'No entry with issue number {issue_number} found')
+        sys.exit(1)
 
     row['Status'] = status
 
@@ -159,6 +198,7 @@ def update_user_story(table: MarkDownTable,
 
 def main():
     args = parse_arguments()
+    log.setLevel(args.log_level.upper())
 
     source = read_file(args.file)
     lines = source.splitlines()
@@ -197,6 +237,13 @@ def main():
     table_str = table.to_text()
 
     write_file(args.file, f'{keep}\n{table_str}')
+
+    if args.command == 'create':
+        print('Created User Story successsully!')
+    elif args.command == 'update':
+        print('Updated User Story successsully!')
+
+    sys.exit(0)
 
 
 if __name__ == '__main__':

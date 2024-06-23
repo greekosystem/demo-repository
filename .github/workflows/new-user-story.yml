@@ -32,6 +32,23 @@ jobs:
       - name: Add User Story to Document
         if: ${{ github.event_name == 'issues' }}
         run: |
-          python .github/scripts/user_story.py create -c "${{ github.event.issue.body }}" \
-            -n ${{ github.event.issue.number }} --url ${{ github.event.issue.html_url }} \
+          python .github/scripts/user_story.py create \
+            --issue-number ${{ github.event.issue.number }} \
+            --url ${{ github.event.issue.html_url }} \
+            --status "In-Progress" \
+            --content "${{ github.event.issue.body }}"
+
+      - name: Commit files
+        run: |
+          git config --local user.name ${MK_USERNAME}
+          git config --local user.email ${MK_EMAIL}
+          git add -A
+          if ! git diff-index --quiet HEAD; then
+            echo "Changes detected. Committing..."
+            git commit -m "Updated User Stories [auto-built]"
+            git push -f origin main
+          else
+            echo "No changes detected."
+          fi
+
 
