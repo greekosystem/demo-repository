@@ -17,7 +17,7 @@ try:
 except ImportError:
     parent = str(pathlib.Path(__file__).parent)
 
-    log.debug(f'Direct Imports failed! Adding parent "{parent}" to sys.path')
+    log.info(f'Direct Imports failed! Adding parent "{parent}" to sys.path')
 
     sys.path.insert(0, parent)
     from extract_content import extract_content, Config
@@ -101,7 +101,7 @@ def parse_arguments() -> argparse.Namespace:
 
 
 def read_file(filepath: str | pathlib.Path) -> str:
-    log.debug(f'Reading file: {filepath}')
+    log.debug(f'Reading file: "{filepath}"')
     with open(filepath) as f:
         content = f.read()
 
@@ -109,7 +109,7 @@ def read_file(filepath: str | pathlib.Path) -> str:
 
 
 def write_file(filepath: str | pathlib.Path, content: str) -> None:
-    log.debug(f'Writing {len(content)} bytes to file: {filepath}')
+    log.debug(f'Writing {len(content)} bytes to file: "{filepath}"')
 
     with open(filepath, 'w+') as f:
         f.write(content)
@@ -200,21 +200,59 @@ def main():
     args = parse_arguments()
     log.setLevel(args.log_level.upper())
 
+    log.debug(f'Using --log-level={args.log_level}')
+    log.debug(f'Using --file="{args.file}"')
+    log.debug(f'Using --skip-lines={args.skip_lines}')
+    log.debug(f'Using command={args.command}')
+    log.debug(f'Using --issue-number={args.issue_number}')
+    log.debug(f'Using --status="{args.status}"')
+
     source = read_file(args.file)
     lines = source.splitlines()
+    n_lines = len(lines)
+
+    log.debug(f'Source contains {n_lines} lines.')
+    log.debug(
+        f'Table parser will use {n_lines - args.skip_lines} lines'
+        f' (lines {args.skip_lines + 1}-{n_lines})'
+    )
 
     keep = '\n'.join(lines[:args.skip_lines])
-
     table_str = '\n'.join(lines[args.skip_lines:])
 
     table = MarkDownTable.genfromtxt(table_str)
+    log.debug(f'Parsed table\n    {table!r}')
 
     if args.command == 'create':
+        log.debug(f'Using --issue-html-url={args.issue_html_url}')
+
+        display_content = args.content
+        max_display_length = 16
+        content_length = len(display_content)
+        if content_length > max_display_length:
+            display_content = f'{display_content[:16]}...'
+
+        display_content = '\\n'.join(display_content.splitlines())
+
+        log.debug(
+            f'Using --content="{display_content}" ({content_length} bytes total)'
+        )
+
         content = args.content
-
         config = Config()
-        description = extract_content(config=config, text=content)
+        try:
+            description = extract_content(config=config, text=content)
+        except ValueError:
+            msg = 'Could not parse description from content.'
+            if args.log_level != 'debug':
+                msg += ' Use `--log-level=debug` to see additional details'
 
+            log.error(msg)
+
+            log.debug(f'Using start_marker="{config.start_marker}"')
+            log.debug(f'Using end_marker="{config.end_marker}"')
+            log.debug(f'Content:\n"{content}"')
+            sys.exit(1)
         assert description is not None, 'Description is not available'
 
         add_user_story(
@@ -236,9 +274,9 @@ def main():
     write_file(args.file, f'{keep}\n{table_str}')
 
     if args.command == 'create':
-        print('Created User Story successsully!')
+        print('\nCreated User Story successsully!')
     elif args.command == 'update':
-        print('Updated User Story successsully!')
+        print('\nUpdated User Story successsully!')
 
     sys.exit(0)
 
