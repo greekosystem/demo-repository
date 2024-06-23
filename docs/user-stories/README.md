@@ -7,4 +7,4 @@
 | As a fitness enthusiast, I want to track my daily water intake through the app, so that I can ensure I'm staying properly hydrated. | 18 Jun, 2024 | [#14](https://github.com/org/demo-repository/issues/14) | In Progress |
 | fix lgo lvel. | 23 Jun, 2024 | [#18](https://github.com/greekosystem/demo-repository/issues/18) | Completed |
 | Not upgrade. | 23 Jun, 2024 | [#21](https://github.com/greekosystem/demo-repository/issues/21) | In-Progress |
-| Full Test Run. | 23 Jun, 2024 | [#22](https://github.com/greekosystem/demo-repository/issues/22) | In-Progress |
+| Full Test Run. | 23 Jun, 2024 | [#22](https://github.com/greekosystem/demo-repository/issues/22) | Completed |
